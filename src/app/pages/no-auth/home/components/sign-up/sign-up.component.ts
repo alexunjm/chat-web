@@ -39,10 +39,10 @@ export class SignUpComponent implements OnInit {
       this.valid.email = false;
       this.valid.all = false;
     }
+    this.user.name.trim();
     if (!(
       this.user.name
       && this.user.name.length > 0
-      && this.user.name.indexOf(' ') < 0
       )) {
       this.valid.name = false;
       this.valid.all = false;
