@@ -4,5 +4,11 @@
             "name": "release/angular-tailwind-node-express-login-signup",
             "base": "develop"
         }
+    ],
+    "gitflow4code.features": [
+        {
+            "name": "feature/sockets",
+            "base": "develop"
+        }
     ]
 }

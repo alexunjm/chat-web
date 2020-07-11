@@ -1,3 +1,4 @@
+import { ChatService } from './shared/services';
 import { Component } from '@angular/core';
 
 @Component({
@@ -7,4 +8,11 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'web';
+
+  constructor(private chatService: ChatService) {
+  }
+
+  ngOnInit(): void {
+    this.chatService.sendMessage('hola');
+  }
 }
