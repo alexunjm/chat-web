@@ -7,7 +7,27 @@
     ],
     "gitflow4code.features": [
         {
+            "name": "feature/todo-list",
+            "base": "develop"
+        },
+        {
+            "name": "feature/web-in-server",
+            "base": "release/persistence"
+        },
+        {
+            "name": "feature/alerts",
+            "base": "develop"
+        },
+        {
             "name": "feature/sockets",
+            "base": "release/chat"
+        },
+        {
+            "name": "feature/sockets",
+            "base": "develop"
+        },
+        {
+            "name": "feature/pages",
             "base": "develop"
         }
     ]
