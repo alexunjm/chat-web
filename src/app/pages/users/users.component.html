@@ -1,1 +1,10 @@
-<p>users works!</p>
+<input type="search" name="filter" (input)="filterInput($event.target.value)" id="">
+
+<ul>
+  <li *ngFor="let elm of filteredData">
+    <div class="img">
+      <img [src]="elm.image" [alt]="elm.username">
+    </div>
+    <p>{{ elm.username }}</p>
+  </li>
+</ul>

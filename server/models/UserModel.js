@@ -47,6 +47,7 @@ Schema.methods.toAuthJSON = function(){
 Schema.methods.toProfileJSONFor = function(user){
   return {
     username: this.username,
+    email: this.email,
     image: this.image || 'https://static.productionready.io/images/smiley-cyrus.jpg',
   };
 };

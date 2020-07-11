@@ -11,12 +11,11 @@ export class AuthService extends ApiService {
 
   constructor(http: HttpClient, lStorage: LStorageService) {
     super(http, lStorage);
-    this.setAPIuri('http://localhost:3000');
   }
 
   singIn({email, pass}) {
     const user = {email, password: pass};
-    return this.post('users/login', {user}).then(response => {
+    return this.post('user/login', {user}).then(response => {
       this.lStorage.set('user', response['user']);
       return Promise.resolve(true);
     }).catch(err => {
@@ -27,7 +26,7 @@ export class AuthService extends ApiService {
 
   singUp({name, email, pass}) {
     const user = {username: name, email, password: pass};
-    return this.post('users', {user}).then(response => {
+    return this.post('user/sign-up', {user}).then(response => {
       // for auto-login
       this.lStorage.set('user', response['user']);
       return Promise.resolve(true);

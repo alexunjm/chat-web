@@ -9,6 +9,9 @@ ng g c pages/users --inlineStyle=true -m=pages/users --skipTests=true
 ng g m pages/chat --routing=true
 ng g c pages/chat --inlineStyle=true -m=pages/chat --skipTests=true
 
+ng g s shared/services/api/user
+ng g s shared/services/api/chat
+
 
 ### example
 
