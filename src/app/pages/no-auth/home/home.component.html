@@ -1,0 +1,10 @@
+<div class="container mx-auto">
+  <span class="static border-red-500 hidden"></span>
+
+  <app-login *ngIf="!signUp" (handleSignIn)="signInOption($event)" (hideLogin)="signUp = true"></app-login>
+  <app-sign-up *ngIf="signUp" (handleSignUp)="signUpOption($event)" (hideSignUp)="signUp = false"></app-sign-up>
+
+  <p class="text-center text-gray-500 text-xs">
+    &copy;2020 Alexander Jaramillo. All rights reserved.
+  </p>
+</div>
