@@ -23,9 +23,6 @@ const events = {
       // message.toMultipleRoomsAvoidingSenderSocket({senderSocket: socket, rooms: [room], event: 'newConversation', data: { room, user }})
     );
   },
-  message: (socket, msg) => {
-    console.log('message: ', msg, socket.id);
-  },
   disconnect: socket => {
     console.log('user disconnected', socket.id);
   }
