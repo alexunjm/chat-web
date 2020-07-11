@@ -78,14 +78,5 @@ var server = app.listen( process.env.PORT || 3000, function(){
 
 
 /// sockets
-var io = require('socket.io')(server);
-
-io.on('connection', (socket) => {
-  console.log('a user connected');
-  socket.on('message', (msg) => {
-    console.log('message: ' + msg);
-  });
-  socket.on('disconnect', () => {
-    console.log('user disconnected');
-  });
-});
+const { sockets } = require('./config/sockets');
+sockets.initWith(server);

@@ -10,9 +10,7 @@ export class AppComponent {
   title = 'web';
 
   constructor(private chatService: ChatService) {
-  }
-
-  ngOnInit(): void {
-    this.chatService.sendMessage('hola');
+    this.chatService.newConversation({id: 1234, name: 'Alex'});
+    this.chatService.onNewConversation(console.log);
   }
 }

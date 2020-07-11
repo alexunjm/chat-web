@@ -7,19 +7,15 @@ import { Socket } from 'ngx-socket-io';
 export class ChatService {
 
   constructor(private socket: Socket) {
-    console.log("ChatService -> constructor -> socket", socket);
+    console.log('ChatService -> constructor -> socket', socket);
   }
 
-  sendMessage(msg: string){
-    this.socket.emit("message", msg);
+  newConversation(user: any){
+    this.socket.emit('newConversationWith', user);
   }
 
-  getMessage() {
-    return this.socket
-      .fromEvent("message").toPromise()
-      .then((data: any) => {
-        const {msg} = data;
-        return Promise.resolve(msg);
-      });
+  onNewConversation(cbFn: (data: {room: string, user: any}) => void) {
+    this.socket
+    .on('newConversation', cbFn);
   }
 }
