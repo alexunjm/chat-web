@@ -7,9 +7,15 @@ const routes: Routes = [{
   path: '',
   component: LayoutComponent,
   children: [{
-    path: '',
+    path: '', redirectTo: 'users', pathMatch: 'prefix'
+  }, {
+    path: 'users',
     loadChildren: () =>
       import('../pages/users/users.module').then(m => m.UsersModule)
+  }, {
+    path: 'chat',
+    loadChildren: () =>
+      import('../pages/chat/chat.module').then(m => m.ChatModule)
   }]
 }];
 

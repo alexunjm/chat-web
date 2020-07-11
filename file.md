@@ -1,11 +1,16 @@
 ## angular cli commands
 
-ng g m pages/users --routing=true
-
-ng g c pages/users --inlineStyle=true -m=pages/users --skipTests=true
-
 ng g c shared/components/top-bar -m=shared/components --inlineStyle=true --skipTests=true
 ng g c shared/components/side-bar -m=shared/components --inlineStyle=true --skipTests=true
+
+ng g m pages/users --routing=true
+ng g c pages/users --inlineStyle=true -m=pages/users --skipTests=true
+
+ng g m pages/chat --routing=true
+ng g c pages/chat --inlineStyle=true -m=pages/chat --skipTests=true
+
+
+### example
 
 ng g c shared/components/top-bar -m=shared/components --inlineStyle=true --skipSelector=true --skipTests=true\n
 
