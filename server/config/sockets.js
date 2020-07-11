@@ -18,7 +18,9 @@ const events = {
     console.log('message: ', {socket_id: socket.id, user});
     const room = `${socket.id}_${user ? user.id : 'alone'}`;
     socket.join(room, () =>
-      message.toRoom({room, event: 'newConversation', data: { room, user }})
+      // message.toRoom({room, event: 'newConversation', data: { room, user }})
+      message.toMultipleRooms({rooms: [room], event: 'newConversation', data: { room, user }})
+      // message.toMultipleRoomsAvoidingSenderSocket({senderSocket: socket, rooms: [room], event: 'newConversation', data: { room, user }})
     );
   },
   message: (socket, msg) => {
@@ -37,14 +39,13 @@ const message = {
     sockets.io.to(room).emit(event, data);
   },
   toMultipleRooms: ({rooms, event, data}) => {
-    // const broadcastTo = (room) => sockets.io.to(room)
-    rooms.reduce((result, room) => result(room), sockets.io.to).emit(event, data);
+    rooms.reduce((result, room) => result.to(room), sockets.io).emit(event, data);
   },
   toAvoidingSenderSocket: ({senderSocket, event, data}) => {
     senderSocket.emit(event, data);
   },
   toMultipleRoomsAvoidingSenderSocket: ({rooms, senderSocket, event, data}) => {
-    rooms.reduce((result, room) => result(room), senderSocket.to).emit(event, data);
+    rooms.reduce((result, room) => result.to(room), senderSocket).emit(event, data);
   }
 }
 
