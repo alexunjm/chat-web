@@ -7,7 +7,7 @@ const routes: Routes = [{
   path: '',
   component: ChatComponent
 }, {
-  path: 'with/:id',
+  path: 'with/:nickname',
   component: ChatComponent
 }];
 

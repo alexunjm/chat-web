@@ -33,6 +33,7 @@ if(isProduction){
 }
 
 require('./models/UserModel');
+require('./models/ChatModel');
 require('./config/passport');
 
 app.use(require('./routes'));

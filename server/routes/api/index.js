@@ -1,6 +1,7 @@
 var router = require('express').Router();
 
 router.use('/user', require('./users'));
+router.use('/chat', require('./chats'));
 
 router.use(function(err, req, res, next){
   if(err.name === 'ValidationError'){
