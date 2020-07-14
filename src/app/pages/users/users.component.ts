@@ -52,5 +52,9 @@ export class UsersComponent implements OnInit {
       return null;
     });
   }
+/*
+  chatWith(user: any) {
+
+  } */
 
 }

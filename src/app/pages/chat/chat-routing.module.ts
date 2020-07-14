@@ -5,7 +5,13 @@ import { Routes, RouterModule } from '@angular/router';
 
 const routes: Routes = [{
   path: '',
-  component: ChatComponent
+  component: ChatComponent,
+  children: [/* {
+    path: '', redirectTo: 'users', pathMatch: 'prefix'
+  }, */ {
+    path: 'with/:id',
+    component: ChatComponent
+  }]
 }];
 
 @NgModule({

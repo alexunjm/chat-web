@@ -1,10 +1,11 @@
 <input type="search" name="filter" (input)="filterInput($event.target.value)" id="">
 
 <ul>
-  <li *ngFor="let elm of filteredData">
+  <li *ngFor="let elm of filteredData" [routerLink]="['/chat/with', elm.id]">
+  <!-- <li *ngFor="let elm of filteredData" (click)="chatWith(elm)" routerLink="/first-component"> -->
     <div class="img">
-      <img [src]="elm.image" [alt]="elm.username">
+      <img [src]="elm.image" [alt]="elm.fullName">
     </div>
-    <p>{{ elm.username }}</p>
+    <p>{{ elm.fullName }}</p>
   </li>
 </ul>

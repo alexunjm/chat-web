@@ -48,11 +48,11 @@ router.put('/', auth.required, function(req, res, next){
     if(!user){ return res.sendStatus(401); }
 
     // only update fields that were actually passed...
-    if(typeof req.body.user.username !== 'undefined'){
-      user.username = req.body.user.username;
+    if(typeof req.body.user.fullName !== 'undefined'){
+      user.fullName = req.body.user.fullName;
     }
-    if(typeof req.body.user.email !== 'undefined'){
-      user.email = req.body.user.email;
+    if(typeof req.body.user.nickname !== 'undefined'){
+      user.nickname = req.body.user.nickname;
     }
     if(typeof req.body.user.image !== 'undefined'){
       user.image = req.body.user.image;
@@ -68,8 +68,8 @@ router.put('/', auth.required, function(req, res, next){
 });
 
 router.post('/login', function(req, res, next){
-  if(!req.body.user.email){
-    return res.status(422).json({errors: {email: "can't be blank"}});
+  if(!req.body.user.nickname){
+    return res.status(422).json({errors: {nickname: "can't be blank"}});
   }
 
   if(!req.body.user.password){
@@ -91,8 +91,8 @@ router.post('/login', function(req, res, next){
 router.post('/sign-up', function(req, res, next){
   const user = new User();
 
-  user.username = req.body.user.username;
-  user.email = req.body.user.email;
+  user.fullName = req.body.user.fullName;
+  user.nickname = req.body.user.nickname;
   user.setPassword(req.body.user.password);
 
   user.save().then(function(){

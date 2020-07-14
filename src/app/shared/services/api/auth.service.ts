@@ -13,8 +13,8 @@ export class AuthService extends ApiService {
     super(http, lStorage);
   }
 
-  singIn({email, pass}) {
-    const user = {email, password: pass};
+  singIn({nickname, pass}) {
+    const user = {nickname, password: pass};
     return this.post('user/login', {user}).then(response => {
       this.lStorage.set('user', response['user']);
       return Promise.resolve(true);
@@ -24,8 +24,8 @@ export class AuthService extends ApiService {
     });
   }
 
-  singUp({name, email, pass}) {
-    const user = {username: name, email, password: pass};
+  singUp({fullName, nickname, pass}) {
+    const user = {fullName, nickname, password: pass};
     return this.post('user/sign-up', {user}).then(response => {
       // for auto-login
       this.lStorage.set('user', response['user']);
