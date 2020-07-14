@@ -1,15 +1,27 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
   styles: []
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, OnDestroy {
 
-  constructor() { }
+  id: number;
+  private paramSubscriber: any;
 
-  ngOnInit(): void {
+  constructor(private route: ActivatedRoute) {}
+
+  ngOnInit() {
+    this.paramSubscriber = this.route.params.subscribe(params => {
+      //  this.id = +params['id']; // (+) converts string 'id' to a number
+       this.id = params['id'];
+    });
+  }
+
+  ngOnDestroy() {
+    this.paramSubscriber.unsubscribe();
   }
 
 }
