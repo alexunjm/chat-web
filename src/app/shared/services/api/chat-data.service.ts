@@ -23,4 +23,52 @@ export class ChatDataService extends ApiService {
       return Promise.reject([]);
     });
   }
+
+  getChat(nickname) {
+
+    return this.get(`chat/with/${nickname}`, {}).then(response => {
+      console.log('ChatDataService -> getChat -> response', response);
+      return Promise.resolve(response);
+    }).catch(err => {
+      console.log('ChatDataService -> getChat -> err', {err});
+      return Promise.reject([]);
+    });
+  }
+
+  private create(data) {
+
+    const {name, nicknames} = data;
+    return this.get('chat/create', {name, nicknames}).then(response => {
+      console.log('ChatDataService -> create -> response', response);
+      return Promise.resolve(response);
+    }).catch(err => {
+      console.log('ChatDataService -> create -> err', {err});
+      return Promise.reject([]);
+    });
+  }
+
+  chatWith(nickname) {
+    return this.create({nicknames: [nickname]});
+  }
+
+  chatGroup(name, nicknames = []) {
+    return this.create({name, nicknames});
+  }
+
+  private update(data) {
+
+    const {id, name, nicknames} = data;
+    return this.get(`chat/update/${id}`, {name, nicknames}).then(response => {
+      console.log('ChatDataService -> update -> response', response);
+      return Promise.resolve(response);
+    }).catch(err => {
+      console.log('ChatDataService -> update -> err', {err});
+      return Promise.reject([]);
+    });
+  }
+
+  joinToChat(chat, nickname) {
+    const {id, nicknames} = chat;
+    return this.create({id, nicknames: [...nicknames, nickname]});
+  }
 }

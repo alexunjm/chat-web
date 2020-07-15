@@ -23,21 +23,11 @@ router.param('id', function(req, res, next, id) {
 router.param('nickname', function(req, res, next, nickname) {
 
   User.find({nickname})
-    .then(function (user) {
-      if (!user) { return res.sendStatus(404); }
+    .then(function (users) {
+      console.log("user by nickname param", {users})
+      if (!users || users.length < 1) { return res.sendStatus(404); }
 
-      Chat.find({$and: [
-        { participants: {"$in" : [req.payload.id, user._id]} },
-        { participants : {$exists:true}, $where:'this.participants.length=2' }
-      ]})
-      .populate('participants')
-      .then(function (chat) {
-        if (!chat) { return res.sendStatus(404); }
-
-        req.chat = chat;
-
-        return next();
-      }).catch(next);
+      req.withUser = users[0];
 
       return next();
     }).catch(next);
@@ -70,7 +60,7 @@ router.get('/list', auth.required, function(req, res, next) {
       .exec(),
     Chat.count(query).exec(),
   ]).then(function([chatList, chatCount]){
-  console.log("chatList, chatCount", chatList, chatCount)
+    // console.log("chatList, chatCount", chatList, chatCount)
 
     const result = {
       chatList: chatList.map(chat => chat.toJSONFor()),
@@ -108,7 +98,7 @@ router.post('/create', auth.required, function(req, res, next) {
       var chat = new Chat({name, participants});
 
       return chat.save().then(function(){
-        return res.json({data: chat.toJSONFor()});
+        return res.json({chat: chat.toJSONFor()});
       });
     }).catch(next);
 
@@ -118,14 +108,41 @@ router.post('/create', auth.required, function(req, res, next) {
 // get chat by id
 router.get('/get/:id', auth.required, function(req, res, next) {
 
-  if (req.chat.owner._id.toString() !== req.payload.id.toString()) { return res.sendStatus(403); }
-  return res.json({data: req.chat.toJSONFor()});
+  return res.json({chat: req.chat.toJSONFor()});
 });
 
 // get chat with user by :nickname
 router.get('/with/:nickname', auth.required, function(req, res, next) {
+  Chat.find({$and: [
+    { participants: {"$in" : [req.payload.id, req.withUser._id]} },
+    { participants : {$exists:true}, $where:'this.participants.length=2' }
+  ]})
+  .populate('participants')
+  .then(function (chats) {
+    console.log("chats", chats)
+    if (chats && chats.length > 0) {
 
-  return res.json({data: req.chat.toJSONFor()});
+      const [chat] = chats;
+      console.log("chat", {chat, chats})
+
+      return res.json({chat: chat.toJSONFor()});
+    }
+
+    User.findById(
+      req.payload.id
+    ).then(user => {
+      const name = `${user.nickname}_${Date.now()}`;
+      const participants = [user, req.withUser];
+
+      console.log("participants", {participants})
+      var chat = new Chat({name, participants});
+
+      chat.save().then(function(){
+        console.log("chat created", {chat});
+        return res.json({chat: chat.toJSONFor()});
+      }).catch(next);
+    })
+  }).catch(next);
 });
 
 // update chat
@@ -136,11 +153,9 @@ router.post('/update/:id', auth.required, function(req, res, next) {
     return res.sendStatus(400);
   }
 
-  Promise.resolve(
-    req.payload.id
-  ).then(userId => {
-    return User.findById(userId)
-  }).then(user => {
+  User.findById(
+    userId
+  ).then(user => {
 
     if (!user) { return res.sendStatus(401); }
 
@@ -171,7 +186,7 @@ router.post('/update/:id', auth.required, function(req, res, next) {
     return req.chat.save();
   }).then((chat) => {
 
-    return res.json({data: chat.toJSONFor()});
+    return res.json({chat: chat.toJSONFor()});
   }).catch(next);
 
 

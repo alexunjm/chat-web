@@ -36,7 +36,6 @@ export class LStorageService {
   getToken() {
     const user = this.get('user');
     if (user) {
-      // console.log(`query token: ${user.token}`/*, user*/);
       return user && user.hasOwnProperty('token') ? user['token'] : null;
     }
     return null;
@@ -44,14 +43,5 @@ export class LStorageService {
 
   setLoggedIn() {
     this.set('isLoggedin', 'true');
-  }
-
-  hasRole(role) {
-    try {
-      const user = this.get('user');
-      return user && user.hasOwnProperty('role') && user.role.toLowerCase() === role.toLowerCase();
-    } catch (error) {
-      return false;
-    }
   }
 }

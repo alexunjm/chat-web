@@ -1,3 +1,4 @@
+import { LStorageService } from './../../shared/services/storage/l-storage.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
@@ -10,29 +11,54 @@ import { ChatDataService } from './../../shared/services/api/chat-data.service';
 })
 export class ChatComponent implements OnInit, OnDestroy {
 
-  dataSource: Array<any>;
+  me: any;
 
-  nickname: number;
+  dataSource: Array<any>;
+  chat: any;
+  typing = '';
+
   private paramSubscriber: any;
 
-  constructor(private route: ActivatedRoute, private chatService: ChatDataService) {}
+  constructor(private route: ActivatedRoute, private chatService: ChatDataService, private lStorageService: LStorageService) {
+    this.me = lStorageService.get('user');
+    // console.log("ChatComponent -> constructor -> this.me", this.me);
+  }
 
   ngOnInit() {
     this.paramSubscriber = this.route.params.subscribe(params => {
-      this.nickname = params['nickname'];
+      const nickname = params['nickname'];
 
-      if (!this.nickname) {
-        this.chatService.list().then((data) => {
-          // const {chats, chatsCount} = data;
+      if (!nickname) {
+        return this.chatService.list().then((data) => {
           this.data = data['chats'];
-          // console.log("ChatComponent -> ngOnInit -> this.data", this.data);
         });
-       }
+      }
+      this.chatService.getChat(nickname).then((data) => {
+        this.dataChat = data['chat'];
+      });
     });
   }
 
   set data(arr: Array<any>) {
     this.dataSource = arr;
+  }
+
+  set dataChat(arr: Array<any>) {
+    this.chat = {...arr, messages: [
+      {from: 1, text: 'hola'},
+      {from: 1, text: 'hola'},
+      {from: this.me.id, text: 'hola'},
+      {from: 1, text: 'hola'},
+      {from: 1, text: 'hola'},
+      {from: this.me.id, text: 'hola'},
+      {from: 1, text: 'hola'},
+      {from: 1, text: 'hola'},
+    ]};
+  }
+
+  newMessage(message) {
+    this.chat.messages.push({from: this.me.id, text: message});
+    this.typing = '';
   }
 
   ngOnDestroy() {

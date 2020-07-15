@@ -30,7 +30,7 @@ Schema.methods.generateJWT = function() {
 
   return jwt.sign({
     id: this._id,
-    fullName: this.fullName,
+    nickname: this.nickname,
     exp: parseInt(exp.getTime() / 1000),
   }, secret);
 };

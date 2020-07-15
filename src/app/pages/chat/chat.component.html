@@ -1,1 +1,30 @@
-<p>chat works!</p>
+<div class="chat" *ngIf="chat">
+  <div class="chat-header bg-gray-100 p-6">
+    <img class="h-16 w-16 rounded-full mx-auto" [src]="chat.participants[1].image">
+    <div>
+      <h2 class="text-lg">{{chat.participants[1].fullName}}</h2>
+      <div class="text-purple-50">@{{chat.participants[1].nickname}}</div>
+    </div>
+  </div>
+  <div class="chat-body bg-transparent">
+    <ul class="messages flex flex-col" >
+      <li
+        *ngFor="let message of (chat.messages || [])"
+        class="message self-end"
+        [ngClass]="{'self-end': message.from == me.id}"
+        >
+        {{message.text}}
+      </li>
+    </ul>
+  </div>
+  <div class="chat-input bg-gray-100 absolute bottom-0 w-full">
+    <textarea
+      class="bg-white focus:outline-none border border-gray-300 py-2 px-4 block w-full appearance-none leading-normal"
+      type="text"
+      placeholder="Type your message here"
+      (keyup.enter)="newMessage($event.target.value)"
+      (input)="typing = $event.target.value"
+      [value] ="typing"
+      ></textarea>
+  </div>
+</div>
