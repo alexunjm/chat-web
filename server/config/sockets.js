@@ -14,22 +14,12 @@ sockets.initWith = server => {
 };
 
 const events = {
-  newConversationWith: (socket, user) => {
-    console.log('message: ', {socket_id: socket.id, user});
-    const room = `${socket.id}_${user ? user.id : 'alone'}`;
-    socket.join(room, () =>
-      // message.toRoom({room, event: 'newConversation', data: { room, user }})
-      message.toMultipleRooms({rooms: [room], event: 'newConversation', data: { room, user }})
-      // message.toMultipleRoomsAvoidingSenderSocket({senderSocket: socket, rooms: [room], event: 'newConversation', data: { room, user }})
-    );
-  },
+
   joinToRoom: (socket, {rooms, userId}) => {
     socket.userOwner = userId
     rooms.forEach(room => {
-      console.log("room", room)
       socket.join(room, ((joinedRoom) => {
-        console.log("joinedRoom", joinedRoom)
-        // message.toRoom({room, event: 'activeInRoom', data: { user: socket.userOwner, joinedRoom }})
+        console.log("joinedRoom", {joinedRoom, userId})
       }).bind(undefined, room))
     });
     message.toMultipleRooms({rooms, event: message.events.USER_CONNECTED, data: { user: socket.userOwner }});
@@ -49,7 +39,6 @@ const message = {
   },
   toRoom: ({room, event, data}) => {
     sockets.io.to(room).emit(event, data);
-    console.log("{room, event, data}", {room, event, data, sockets});
   },
   toMultipleRooms: ({rooms, event, data}) => {
     rooms.reduce((result, room) => result.to(room), sockets.io).emit(event, data);

@@ -1,3 +1,17 @@
+<div class="chat-list">
+  <ul>
+    <li *ngFor="let chat of dataSource" [routerLink]="['/chat/with', chat.participants[1].nickname]">
+      <div class="chat-header bg-gray-100 p-6">
+        <img class="h-16 w-16 rounded-full mx-auto" [src]="chat.participants[1].image">
+        <div>
+          <h2 class="text-lg">{{chat.participants[1].fullName}}</h2>
+          <div class="text-purple-50">@{{chat.participants[1].nickname}}</div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>
+
 <div class="chat" *ngIf="chat">
   <div class="chat-header bg-gray-100 p-6">
     <img class="h-16 w-16 rounded-full mx-auto" [src]="chat.participants[1].image">

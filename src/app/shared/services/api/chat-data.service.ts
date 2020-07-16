@@ -16,7 +16,7 @@ export class ChatDataService extends ApiService {
   list() {
 
     return this.get('chat/list', {}).then(response => {
-      // console.log('ChatDataService -> list -> response', response);
+      console.log('ChatDataService -> list -> response', response);
       return Promise.resolve(response);
     }).catch(err => {
       console.log('ChatDataService -> list -> err', {err});

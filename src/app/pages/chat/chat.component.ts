@@ -29,7 +29,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     lStorageService: LStorageService
   ) {
     this.me = lStorageService.get('user');
-    // console.log("ChatComponent -> constructor -> this.me", this.me);
   }
 
   ngOnInit() {
@@ -38,14 +37,12 @@ export class ChatComponent implements OnInit, OnDestroy {
 
       if (!nickname) {
         return this.chatPersistenceService.list().then((data) => {
-          this.data = data['chats'];
+          this.data = data['chatList'];
         });
       }
       this.chatPersistenceService.getChat(nickname).then((data) => {
-        // this.dataChat = data['chat'];
         const selectedChat = data['chat'];
         this.chatPersistenceService.messagesFromChat(selectedChat).then(data => {
-          // this.dataChat = {...this.chat, srcMessages: data['messageList']};
           this.dataChat = {...selectedChat, srcMessages: data['messageList']};
           this.joinMessages(this.chat);
         });
@@ -54,11 +51,15 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   set data(arr: Array<any>) {
+    console.log("ChatComponent -> setdata -> arr", arr)
     this.dataSource = arr;
-    this.chatSocketEvt.joinToChatRooms(this.dataSource, this.me.id);
-    this.dataSource.forEach(chat => {
-      this.chatSocketEvt.onChatMessage(chat, this.joinMessages);
-    });
+    if (arr && arr.length > 0) {
+
+      this.chatSocketEvt.joinToChatRooms(this.dataSource, this.me.id);
+      this.dataSource.forEach(chat => {
+        this.chatSocketEvt.onChatMessage(chat, this.joinMessages);
+      });
+    }
 
   }
 
@@ -70,7 +71,6 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   joinMessages(chat) {
     chat.messages = [...(chat.srcMessages || []).reverse(), ...(chat.newMessages || [])];
-    console.log("ChatComponent -> joinMessages -> chatMessages", {chat});
   }
 
   newMessage(message) {
@@ -79,8 +79,6 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.chat.id,
       {from: this.me.id, text: message}
     ).then(data => {
-      console.log('ChatComponent -> newMessage -> data', data);
-      // this.chat.messages.push(data['message']);
       this.typing = '';
       this.isSendingMessage = false;
     }).catch(err => {

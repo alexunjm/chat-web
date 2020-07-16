@@ -26,6 +26,7 @@ router.param('nickname', function(req, res, next, nickname) {
 
   User.find({nickname})
     .then(function (users) {
+      console.log("users", {users, nickname})
       if (!users || users.length < 1) { return res.sendStatus(404); }
 
       req.withUser = users[0];
@@ -114,8 +115,9 @@ router.get('/get/:id', auth.required, function(req, res/* , next */) {
 // get chat with user by :nickname
 router.get('/with/:nickname', auth.required, function(req, res, next) {
   Chat.find({$and: [
-    { participants: {"$in" : [req.payload.id, req.withUser._id]} },
-    { participants : {$exists:true}, $where:'this.participants.length=2' }
+    { participants : {$exists:true}, $where:'this.participants.length=2' },
+    { participants: req.payload.id },
+    { participants: req.withUser._id },
   ]})
   .populate('participants')
   .then(function (chats) {
