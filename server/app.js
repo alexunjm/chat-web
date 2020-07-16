@@ -34,6 +34,7 @@ if(isProduction){
 
 require('./models/UserModel');
 require('./models/ChatModel');
+require('./models/MessageModel');
 
 require('./config/passport');
 app.use(require('./routes'));

@@ -10,7 +10,7 @@ export class ChatService {
     console.log('ChatService -> constructor -> socket', socket);
   }
 
-  newConversation(user: any){
+  newConversationWith(user: any){
     this.socket.emit('newConversationWith', user);
   }
 

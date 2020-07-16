@@ -2,6 +2,7 @@ var router = require('express').Router();
 var mongoose = require('mongoose');
 var User = mongoose.model('User');
 var Chat = mongoose.model('Chat');
+var Message = mongoose.model('Message');
 var auth = require('../auth');
 
 
@@ -24,7 +25,6 @@ router.param('nickname', function(req, res, next, nickname) {
 
   User.find({nickname})
     .then(function (users) {
-      console.log("user by nickname param", {users})
       if (!users || users.length < 1) { return res.sendStatus(404); }
 
       req.withUser = users[0];
@@ -60,14 +60,13 @@ router.get('/list', auth.required, function(req, res, next) {
       .exec(),
     Chat.count(query).exec(),
   ]).then(function([chatList, chatCount]){
-    // console.log("chatList, chatCount", chatList, chatCount)
 
     const result = {
       chatList: chatList.map(chat => chat.toJSONFor()),
       chatCount
     }
     return res.json(result);
-  });
+  }).catch(next);
 
 });
 
@@ -106,7 +105,7 @@ router.post('/create', auth.required, function(req, res, next) {
 });
 
 // get chat by id
-router.get('/get/:id', auth.required, function(req, res, next) {
+router.get('/get/:id', auth.required, function(req, res/* , next */) {
 
   return res.json({chat: req.chat.toJSONFor()});
 });
@@ -119,11 +118,9 @@ router.get('/with/:nickname', auth.required, function(req, res, next) {
   ]})
   .populate('participants')
   .then(function (chats) {
-    console.log("chats", chats)
     if (chats && chats.length > 0) {
 
       const [chat] = chats;
-      console.log("chat", {chat, chats})
 
       return res.json({chat: chat.toJSONFor()});
     }
@@ -134,11 +131,9 @@ router.get('/with/:nickname', auth.required, function(req, res, next) {
       const name = `${user.nickname}_${Date.now()}`;
       const participants = [user, req.withUser];
 
-      console.log("participants", {participants})
       var chat = new Chat({name, participants});
 
       chat.save().then(function(){
-        console.log("chat created", {chat});
         return res.json({chat: chat.toJSONFor()});
       }).catch(next);
     })
@@ -199,7 +194,64 @@ router.delete('/delete/:id', auth.required, function(req, res, next) {
 
   return req.chat.remove().then(function(){
     return res.sendStatus(204);
-  });
+  }).catch(next);
+});
+
+// add new message chat
+router.get('/:id/messages', auth.required, function(req, res, next) {
+
+  var query = {chat: req.chat._id};
+  var limit = 20;
+  var offset = 0;
+
+  if(typeof req.query.limit !== 'undefined'){
+    limit = req.query.limit;
+  }
+
+  if(typeof req.query.offset !== 'undefined'){
+    offset = req.query.offset;
+  }
+
+  return Promise.all([
+    Message.find(query)
+      .limit(Number(limit))
+      .skip(Number(offset))
+      .sort({updatedAt: 'desc'})
+      .exec(),
+    Message.count(query).exec(),
+  ]).then(function([messageList, messageCount]){
+
+    const result = {
+      messageList: messageList.map(message => message.toJSONFor()),
+      totalMessages: messageCount,
+      limit, offset
+    }
+    return res.json(result);
+  }).catch(next);
+
+});
+
+// add new message chat
+router.post('/:id/message', auth.required, function(req, res, next) {
+
+  if (req.body.message.from != req.payload.id) { return res.sendStatus(403); }
+
+  User.findById(req.payload.id).then(user => {
+
+    if (!user) { return res.sendStatus(401); }
+
+    // req.chat;
+    const message = new Message({...req.body.message, chat: req.chat});
+
+    message.save().then(function(msg){
+      req.chat.messages.concat([msg]);
+
+      return req.chat.save().then(function(chat) {
+        res.json({message: msg.toJSONFor()});
+      }).catch(next);
+    }).catch(next);
+  }).catch(next);
+
 });
 
 module.exports = router;

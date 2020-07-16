@@ -1,10 +1,12 @@
 var mongoose = require('mongoose');
-// var uniqueValidator = require('mongoose-unique-validator');
-// var User = mongoose.model('User');
+
 
 var Schema = new mongoose.Schema({
-  name: { type: String, required: [true, "can't be blank"]},
-  participants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
+  name: { type: String, required: [true, "can't be blank"] },
+  participants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  messages: [{
+    type: mongoose.Schema.Types.ObjectId, ref: 'Message'
+  }]
 }, {timestamps: true});
 
 Schema.methods.toJSONFor = function(){

@@ -25,6 +25,7 @@
       (keyup.enter)="newMessage($event.target.value)"
       (input)="typing = $event.target.value"
       [value] ="typing"
+      [disabled]="isSendingMessage"
       ></textarea>
   </div>
 </div>

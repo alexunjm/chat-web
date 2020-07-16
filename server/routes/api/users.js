@@ -27,7 +27,7 @@ router.get('/list', auth.required, function(req, res, next){
 
   query.nickname = {$ne: req.payload.nickname};
 
-  console.log("query", {payload: req.payload, query});
+  // console.log("query", {payload: req.payload, query});
 
   Promise.all([
     User.find(query)
