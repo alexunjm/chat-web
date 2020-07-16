@@ -16,6 +16,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   dataSource: Array<any>;
   chat: any;
+
   typing = '';
   isSendingMessage = false;
 
@@ -23,8 +24,8 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private chatEvt: ChatService,
-    private chatService: ChatDataService,
+    private chatSocketEvt: ChatService,
+    private chatPersistenceService: ChatDataService,
     lStorageService: LStorageService
   ) {
     this.me = lStorageService.get('user');
@@ -36,14 +37,17 @@ export class ChatComponent implements OnInit, OnDestroy {
       const nickname = params['nickname'];
 
       if (!nickname) {
-        return this.chatService.list().then((data) => {
+        return this.chatPersistenceService.list().then((data) => {
           this.data = data['chats'];
         });
       }
-      this.chatService.getChat(nickname).then((data) => {
-        this.dataChat = data['chat'];
-        this.chatService.messagesFromChat(this.chat).then(data => {
-          this.chat.messages = data['messageList'].sort((a, b) => -1);
+      this.chatPersistenceService.getChat(nickname).then((data) => {
+        // this.dataChat = data['chat'];
+        const selectedChat = data['chat'];
+        this.chatPersistenceService.messagesFromChat(selectedChat).then(data => {
+          // this.dataChat = {...this.chat, srcMessages: data['messageList']};
+          this.dataChat = {...selectedChat, srcMessages: data['messageList']};
+          this.joinMessages(this.chat);
         });
       });
     });
@@ -51,27 +55,36 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   set data(arr: Array<any>) {
     this.dataSource = arr;
+    this.chatSocketEvt.joinToChatRooms(this.dataSource, this.me.id);
+    this.dataSource.forEach(chat => {
+      this.chatSocketEvt.onChatMessage(chat, this.joinMessages);
+    });
+
   }
 
   set dataChat(chat: any) {
-    this.chat = {...chat, messages: [/*
-      {from: 1, text: 'hola'},
-      {from: this.me.id, text: 'hola'}, */
-    ]};
+    this.chat = chat;
+    this.chatSocketEvt.joinToChatRooms([this.chat], this.me.id);
+    this.chatSocketEvt.onChatMessage(this.chat, this.joinMessages);
+  }
+
+  joinMessages(chat) {
+    chat.messages = [...(chat.srcMessages || []).reverse(), ...(chat.newMessages || [])];
+    console.log("ChatComponent -> joinMessages -> chatMessages", {chat});
   }
 
   newMessage(message) {
     this.isSendingMessage = true;
-    this.chatService.newMessage(
+    this.chatPersistenceService.newMessage(
       this.chat.id,
       {from: this.me.id, text: message}
     ).then(data => {
       console.log('ChatComponent -> newMessage -> data', data);
-      this.chat.messages.push(data['message']);
+      // this.chat.messages.push(data['message']);
       this.typing = '';
       this.isSendingMessage = false;
     }).catch(err => {
-      console.log('ChatComponent -> newMessage -> err', err)
+      console.log('ChatComponent -> newMessage -> err', err);
       this.typing = '';
       this.isSendingMessage = false;
     });

@@ -13,7 +13,7 @@
         class="message self-end"
         [ngClass]="{'self-end': message.from == me.id}"
         >
-        {{message.text}}
+        <span class="whitespace-pre-wrap">{{message.text | format_p}}</span>
       </li>
     </ul>
   </div>

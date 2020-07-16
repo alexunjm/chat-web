@@ -23,17 +23,33 @@ const events = {
       // message.toMultipleRoomsAvoidingSenderSocket({senderSocket: socket, rooms: [room], event: 'newConversation', data: { room, user }})
     );
   },
+  joinToRoom: (socket, {rooms, userId}) => {
+    socket.userOwner = userId
+    rooms.forEach(room => {
+      console.log("room", room)
+      socket.join(room, ((joinedRoom) => {
+        console.log("joinedRoom", joinedRoom)
+        // message.toRoom({room, event: 'activeInRoom', data: { user: socket.userOwner, joinedRoom }})
+      }).bind(undefined, room))
+    });
+    message.toMultipleRooms({rooms, event: message.events.USER_CONNECTED, data: { user: socket.userOwner }});
+  },
   disconnect: socket => {
     console.log('user disconnected', socket.id);
   }
 };
 
 const message = {
+  events: {
+    USER_CONNECTED: 'USER_CONNECTED',
+    NEW_MESSAGE: 'NEW_MESSAGE'
+  },
   to: ({event, data}) => {
     sockets.io.emit(event, data);
   },
   toRoom: ({room, event, data}) => {
     sockets.io.to(room).emit(event, data);
+    console.log("{room, event, data}", {room, event, data, sockets});
   },
   toMultipleRooms: ({rooms, event, data}) => {
     rooms.reduce((result, room) => result.to(room), sockets.io).emit(event, data);
@@ -48,5 +64,5 @@ const message = {
 
 module.exports = {
   sockets,
-  message
+  socketMessage: message
 };

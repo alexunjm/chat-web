@@ -4,6 +4,7 @@ var User = mongoose.model('User');
 var Chat = mongoose.model('Chat');
 var Message = mongoose.model('Message');
 var auth = require('../auth');
+var { socketMessage } = require('../../config/sockets');
 
 
 // Preload id objects on routes with ':id'
@@ -197,7 +198,7 @@ router.delete('/delete/:id', auth.required, function(req, res, next) {
   }).catch(next);
 });
 
-// add new message chat
+// get messages from chat
 router.get('/:id/messages', auth.required, function(req, res, next) {
 
   var query = {chat: req.chat._id};
@@ -247,7 +248,10 @@ router.post('/:id/message', auth.required, function(req, res, next) {
       req.chat.messages.concat([msg]);
 
       return req.chat.save().then(function(chat) {
-        res.json({message: msg.toJSONFor()});
+        const data = {message: msg.toJSONFor()};
+        const event = socketMessage.events.NEW_MESSAGE;
+        socketMessage.toRoom({room: chat._id, event, data});
+        res.json(data);
       }).catch(next);
     }).catch(next);
   }).catch(next);

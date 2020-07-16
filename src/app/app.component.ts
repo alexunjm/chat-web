@@ -10,7 +10,7 @@ export class AppComponent {
   title = 'web';
 
   constructor(private chatService: ChatService) {
-    this.chatService.newConversationWith({id: 1234, nickname: 'Alex'});
-    this.chatService.onNewConversation(console.log);
+    // this.chatService.joinToChatRooms([{id: 'a'}, {id: 'b'}], 'abc');
+    // this.chatService.onSomeUserConnected(console.log);
   }
 }
