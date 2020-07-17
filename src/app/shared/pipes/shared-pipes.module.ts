@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ObjToKeyVal, NmbToArr } from './format/format';
+import { ObjToKeyVal, NmbToArr, FormatP } from './format/format';
 
 @NgModule({
     imports: [
@@ -8,11 +8,13 @@ import { ObjToKeyVal, NmbToArr } from './format/format';
     ],
     declarations: [
         ObjToKeyVal,
-        NmbToArr
+        NmbToArr,
+        FormatP
     ],
     exports: [
         ObjToKeyVal,
-        NmbToArr
+        NmbToArr,
+        FormatP
     ]
 })
 export class SharedPipesModule { }

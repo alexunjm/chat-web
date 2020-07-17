@@ -14,14 +14,15 @@ sockets.initWith = server => {
 };
 
 const events = {
-  newConversationWith: (socket, user) => {
-    console.log('message: ', {socket_id: socket.id, user});
-    const room = `${socket.id}_${user ? user.id : 'alone'}`;
-    socket.join(room, () =>
-      // message.toRoom({room, event: 'newConversation', data: { room, user }})
-      message.toMultipleRooms({rooms: [room], event: 'newConversation', data: { room, user }})
-      // message.toMultipleRoomsAvoidingSenderSocket({senderSocket: socket, rooms: [room], event: 'newConversation', data: { room, user }})
-    );
+
+  joinToRoom: (socket, {rooms, userId}) => {
+    socket.userOwner = userId
+    rooms.forEach(room => {
+      socket.join(room, ((joinedRoom) => {
+        console.log("joinedRoom", {joinedRoom, userId})
+      }).bind(undefined, room))
+    });
+    message.toMultipleRooms({rooms, event: message.events.USER_CONNECTED, data: { user: socket.userOwner }});
   },
   disconnect: socket => {
     console.log('user disconnected', socket.id);
@@ -29,6 +30,10 @@ const events = {
 };
 
 const message = {
+  events: {
+    USER_CONNECTED: 'USER_CONNECTED',
+    NEW_MESSAGE: 'NEW_MESSAGE'
+  },
   to: ({event, data}) => {
     sockets.io.emit(event, data);
   },
@@ -48,5 +53,5 @@ const message = {
 
 module.exports = {
   sockets,
-  message
+  socketMessage: message
 };

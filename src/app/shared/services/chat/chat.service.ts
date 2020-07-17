@@ -6,16 +6,22 @@ import { Socket } from 'ngx-socket-io';
 })
 export class ChatService {
 
-  constructor(private socket: Socket) {
-    console.log('ChatService -> constructor -> socket', socket);
+  constructor(private socket: Socket) { }
+
+  joinToChatRooms(chats, userId){
+    this.socket.emit('joinToRoom', {rooms: chats.map(c => c.id), userId});
   }
 
-  newConversation(user: any){
-    this.socket.emit('newConversationWith', user);
+  onSomeUserConnected(cbFn: (data: {user: string}) => void) {
+    this.socket.on('USER_CONNECTED', cbFn);
   }
 
-  onNewConversation(cbFn: (data: {room: string, user: any}) => void) {
-    this.socket
-    .on('newConversation', cbFn);
+  onChatMessage(chat: any, cbFn: (messages: Array<any>) => void) {
+    this.socket.on('NEW_MESSAGE', data => {
+      // if (message.chat === chat.id) {
+      chat.newMessages = [...(chat.newMessages || []), data['message']];
+      cbFn(chat);
+      // }
+    });
   }
 }

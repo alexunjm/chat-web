@@ -1,0 +1,10 @@
+<input type="search" name="filter" (input)="filterInput($event.target.value)" id="">
+
+<ul>
+  <li *ngFor="let elm of filteredData" [routerLink]="['/chat/with', elm.nickname]">
+    <div class="img">
+      <img [src]="elm.image" [alt]="elm.nickname">
+    </div>
+    <p>{{ elm.fullName }}</p>
+  </li>
+</ul>
