@@ -9,6 +9,9 @@ const routes: Routes = [{
 }, {
   path: 'with/:nickname',
   component: ChatComponent
+}, {
+  path: 'channel/:channelId',
+  component: ChatComponent
 }];
 
 @NgModule({

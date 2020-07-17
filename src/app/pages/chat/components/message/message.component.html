@@ -1,0 +1,10 @@
+<ng-template #messageTpl>
+  <div class="inline-block whitespace-pre-wrap my-1 px-2 py-1 bg-gray-200 rounded-md text-gray-800 leading-tight sm:max-w-md">{{ text }}</div>
+</ng-template>
+<ng-template #myMessageTpl>
+  <div class="inline-block whitespace-pre-wrap my-1 px-2 py-1 bg-green-200 rounded-md text-gray-800 leading-tight text-right sm:max-w-md">{{ text }}</div>
+</ng-template>
+
+<ng-template [ngIf]="notMine" [ngIfElse]="myMessageTpl">
+  <ng-container *ngTemplateOutlet="messageTpl"></ng-container>
+</ng-template>

@@ -16,6 +16,10 @@ const routes: Routes = [{
     path: 'chat',
     loadChildren: () =>
       import('../pages/chat/chat.module').then(m => m.ChatModule)
+  }, {
+    path: 'chat/channels',
+    loadChildren: () =>
+      import('../pages/chat/chat.module').then(m => m.ChatModule)
   }]
 }];
 

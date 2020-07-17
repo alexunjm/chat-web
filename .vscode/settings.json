@@ -29,6 +29,10 @@
         {
             "name": "feature/pages",
             "base": "develop"
+        },
+        {
+            "name": "feature/style",
+            "base": "develop"
         }
     ]
 }

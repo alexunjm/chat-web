@@ -1,1 +1,12 @@
-<p>side-bar works!</p>
+
+<ul class="sticky inset-0 flex flex-col justify-center mt-20 p-4 border-t-2">
+  <li class="inline-block">
+      <a class="cursor-pointer hover:text-blue-800" [routerLink]="['/users']">Users</a>
+  </li>
+  <li class="inline-block">
+      <a class="cursor-pointer hover:text-blue-800" [routerLink]="['/chat/channel/all']">Channels</a>
+  </li>
+  <li class="inline-block">
+      <a class="cursor-pointer hover:text-blue-800" [routerLink]="['/chat']">Direct messages</a>
+  </li>
+</ul>

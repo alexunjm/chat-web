@@ -1,45 +1,154 @@
+<!--
+<ng-template #clock>
+  <svg class="fill-current h-6 w-6 text-orange-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path class="heroicon-ui" d="M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm1-8.41l2.54 2.53a1 1 0 0 1-1.42 1.42L11.3 12.7A1 1 0 0 1 11 12V8a1 1 0 0 1 2 0v3.59z"/></svg>
+</ng-template>
+<ng-container *ngTemplateOutlet="clock"></ng-container>
+ -->
+
+<!-- header profile -->
+<ng-template #directMessageProfile>
+  <div class="p-4 flex items-center shadow sticky top-0 bg-white">
+    <img class="w-10 h-10 md:h-16 md:w-16 rounded-full mr-2" [src]="chat.participants[1].image">
+    <div>
+      <h2 class="font-medium leading-none capitalize">{{chat.participants[1].fullName}}</h2>
+      <div class="text-gray-600 text-xs leading-none">@{{chat.participants[1].nickname}}</div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #groupProfile>
+  <div class="p-4 flex justify-between items-end shadow sticky top-0 bg-white">
+    <div>
+      <div class="font-medium">#{{ chat.name }}</div>
+      <div class="flex">
+        <div class="text-sm text-gray-700 font-normal px-2 border-r-2">{{ chat.participants.length }}</div>
+        <!-- <div class="text-sm text-gray-700 font-normal px-2 border-r-2">1</div> -->
+        <div class="text-sm text-gray-700 font-normal px-2">{{ chat.participants | map_join:{prop:'nickname', sep: ', '} }}</div>
+      </div>
+    </div>
+    <!-- <div class="text-sm text-gray-700 font-normal">Details</div> -->
+  </div>
+</ng-template>
+<!-- end header profile -->
+
+<div class="h-full text-gray-900" *ngIf="chat">
+  <div class="h-full">
+    <div class="h-full flex flex-col">
+      <!-- header of chat -->
+      <ng-template [ngIf]="chat.isChannel" [ngIfElse]="directMessageProfile">
+        <ng-container *ngTemplateOutlet="groupProfile"></ng-container>
+      </ng-template>
+      <!-- content of chat -->
+      <div class="flex-1 flex flex-col">
+        <div class="px-4 flex-1">
+          <div class="flex flex-col">
+            <div class="flex-1">
+              <!-- block i -->
+              <div
+                class="my-2"
+                *ngFor="let block of chat.messages.blocks">
+                <div class="flex">
+                  <!-- profile image -->
+                  <div class="mr-3 w-16" [ngClass]="{'w-16': block.from === me.id}">
+                    <img
+                      class="w-10 h-10 md:h-16 md:w-16 object-cover rounded-full"
+                      *ngIf="chat.isChannel && block.from !== me.id"
+                      [src]="chat.user[block.from].image">
+                  </div>
+                  <!-- message block with user block header -->
+                  <div class="flex-1">
+                    <!-- user header -->
+                    <div class="ml-1 flex items-end justify-end" [ngClass]="{'justify-end': block.from === me.id}">
+                      <div class="font-medium mr-2 leading-none capitalize">{{ chat.user[block.from].fullName }}</div>
+                      <!-- <div class="text-gray-600 text-xs leading-none">{{ block.messages[0].date }}</div> -->
+                    </div>
+                    <!-- block message -->
+                    <div class="text-sm">
+                      <!-- msg i -->
+                      <div
+                        class="flex justify-end"
+                        [ngClass]="{'justify-end': block.from === me.id}"
+                        *ngFor="let message of block.messages">
+
+                        <chat-message [notMine]="block.from !== me.id" [text]="message.text"></chat-message>
+                      </div>
+                      <!-- end msg i -->
+                    </div>
+                    <!-- end block message -->
+                  </div>
+                  <!-- end message block with user block header -->
+                </div>
+              </div>
+              <!-- end block i -->
+            </div>
+          </div>
+        </div>
+        <div class="bg-white px-3 sticky inset-0 mt-2" #lastDiv>
+          <textarea
+            class="w-full p-2 text-sm text-gray-800 rounded-md border resize-none focus:outline-none focus:shadow"
+            name="chatting-area"
+            placeholder="Type your message here"
+            (keyup.enter)="newMessage($event.target)"
+            (input)="typing = $event.target.value"
+            [value] ="typing"
+            [disabled]="isSendingMessage"
+          ></textarea>
+        </div>
+      </div>
+      <!-- end content of chat -->
+    </div>
+  </div>
+</div>
+
+<!--
 <div class="chat-list">
   <ul>
     <li *ngFor="let chat of dataSource" [routerLink]="['/chat/with', chat.participants[1].nickname]">
-      <div class="chat-header bg-gray-100 p-6">
-        <img class="h-16 w-16 rounded-full mx-auto" [src]="chat.participants[1].image">
-        <div>
-          <h2 class="text-lg">{{chat.participants[1].fullName}}</h2>
-          <div class="text-purple-50">@{{chat.participants[1].nickname}}</div>
-        </div>
-      </div>
+      aquí van los datos del chat
     </li>
   </ul>
 </div>
+ -->
 
-<div class="chat" *ngIf="chat">
-  <div class="chat-header bg-gray-100 p-6">
-    <img class="h-16 w-16 rounded-full mx-auto" [src]="chat.participants[1].image">
-    <div>
-      <h2 class="text-lg">{{chat.participants[1].fullName}}</h2>
-      <div class="text-purple-50">@{{chat.participants[1].nickname}}</div>
+<div class="h-full text-gray-900" *ngIf="dataSource">
+  <div class="h-full">
+    <div class="h-full flex flex-col">
+      <!-- header of chat -->
+      <div class="p-4">
+        <div class="font-medium leading-none capitalize">chats</div>
+        <input
+          class="w-full p-2 mt-2 text-lg text-gray-800 rounded-md border resize-none focus:outline-none focus:shadow"
+          name="filter"
+          placeholder="Search by chat name or nickname"
+          type="search"
+          (input)="filterInput($event.target.value)"
+          />
+      </div>
+      <!-- content of chat -->
+      <div class="flex-1 flex flex-col">
+        <div class="px-4 flex-1">
+          <div class="flex flex-col">
+            <div class="flex-1">
+              <!-- block i -->
+              <div class="my-2">
+                <ul class="">
+                  <li
+                    class="p-1 bg-white m-1 rounded cursor-pointer shadow"
+                    *ngFor="let elm of filteredData"
+                    [routerLink]="['/chat/channel', elm.id]" >
+
+                    <h2 class="text-lg">{{ elm.isChannel ? '#': '' }}{{ elm.name }}</h2>
+                    <div class="text-sm text-gray-500">with: {{ elm.participants | map_join:{prop:'nickname', sep: ', '} }}</div>
+
+                  </li>
+                </ul>
+              </div>
+              <!-- end block i -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- end content of chat -->
     </div>
   </div>
-  <div class="chat-body bg-transparent">
-    <ul class="messages flex flex-col" >
-      <li
-        *ngFor="let message of (chat.messages || [])"
-        class="message self-end"
-        [ngClass]="{'self-end': message.from == me.id}"
-        >
-        <span class="whitespace-pre-wrap">{{message.text | format_p}}</span>
-      </li>
-    </ul>
-  </div>
-  <div class="chat-input bg-gray-100 absolute bottom-0 w-full">
-    <textarea
-      class="bg-white focus:outline-none border border-gray-300 py-2 px-4 block w-full appearance-none leading-normal"
-      type="text"
-      placeholder="Type your message here"
-      (keyup.enter)="newMessage($event.target.value)"
-      (input)="typing = $event.target.value"
-      [value] ="typing"
-      [disabled]="isSendingMessage"
-      ></textarea>
-  </div>
 </div>
+
