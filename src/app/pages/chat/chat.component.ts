@@ -83,6 +83,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   set dataChat(chat: any) {
     this.chat = chat;
+    this.chat.groupMessage = chat.participants.length > 2;
     this.chat.user = this.chat.participants.reduce((result, p) => {
       result[p.id] = p;
       return result;

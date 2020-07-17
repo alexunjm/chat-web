@@ -28,18 +28,11 @@
   </div>
 </ng-template>
 
-<ng-template #messageTpl>
-  <div class="inline-block my-1 px-2 py-1 bg-gray-200 rounded-md text-gray-800 leading-tight sm:max-w-md">{{ message.text }}</div>
-</ng-template>
-<ng-template #myMessageTpl>
-  <div class="inline-block text-right my-1 px-2 py-1 bg-green-200 rounded-md text-gray-800 leading-tight sm:max-w-md">{{ message.text }}</div>
-</ng-template>
-
 <div class="h-full text-gray-900" *ngIf="chat">
   <div class="h-full">
     <div class="h-full flex flex-col">
       <!-- header of chat -->
-      <ng-template [ngIf]="chat.participants.length > 2" [ngIfElse]="directMessageProfile">
+      <ng-template [ngIf]="chat.groupMessage" [ngIfElse]="directMessageProfile">
         <ng-container *ngTemplateOutlet="groupProfile"></ng-container>
       </ng-template>
       <!-- content of chat -->
@@ -54,7 +47,7 @@
                   <div class="mr-3 w-16" [ngClass]="{'w-16': block.from === me.id}">
                     <img
                       class="w-10 h-10 md:h-16 md:w-16 object-cover rounded-full"
-                      *ngIf="block.from !== me.id"
+                      *ngIf="chat.groupMessage && block.from !== me.id"
                       [src]="chat.user[block.from].image">
                   </div>
                   <!-- message block with user block header -->
@@ -72,9 +65,7 @@
                         [ngClass]="{'justify-end': block.from === me.id}"
                         *ngFor="let message of block.messages">
 
-                        <ng-template [ngIf]="block.from !== me.id" [ngIfElse]="myMessageTpl">
-                          <ng-container *ngTemplateOutlet="messageTpl"></ng-container>
-                        </ng-template>
+                        <chat-message [notMine]="block.from !== me.id" [text]="message.text"></chat-message>
                       </div>
                     </div>
                   </div>

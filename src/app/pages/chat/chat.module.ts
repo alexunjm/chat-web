@@ -5,10 +5,11 @@ import { ChatRoutingModule } from './chat-routing.module';
 import { ChatComponent } from './chat.component';
 
 import { SharedPipesModule } from './../../shared/pipes/shared-pipes.module';
+import { MessageComponent } from './components/message/message.component';
 
 
 @NgModule({
-  declarations: [ChatComponent],
+  declarations: [ChatComponent, MessageComponent],
   imports: [
     CommonModule,
     ChatRoutingModule,
