@@ -3,6 +3,10 @@
         {
             "name": "release/angular-tailwind-node-express-login-signup",
             "base": "develop"
+        },
+        {
+            "name": "release/dot7",
+            "base": "develop"
         }
     ],
     "gitflow4code.features": [
