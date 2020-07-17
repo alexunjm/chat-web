@@ -1,13 +1,12 @@
-<div class="sticky inset-0 flex flex-col flex-auto">
-  <div class="mt-16 p-4">
-    <h3>
-      <a class="cursor-pointer" [routerLink]="['/users']">Users</a>
-    </h3>
-    <h3>
-      <a class="cursor-pointer" [routerLink]="['/chat/channel/all']">Channels</a>
-    </h3>
-    <h3>
-      <a class="cursor-pointer" [routerLink]="['/chat']">Direct messages</a>
-    </h3>
-  </div>
-</div>
+
+<ul class="sticky inset-0 flex flex-col justify-center mt-20 p-4 border-t-2">
+  <li class="inline-block">
+      <a class="cursor-pointer hover:text-blue-800" [routerLink]="['/users']">Users</a>
+  </li>
+  <li class="inline-block">
+      <a class="cursor-pointer hover:text-blue-800" [routerLink]="['/chat/channel/all']">Channels</a>
+  </li>
+  <li class="inline-block">
+      <a class="cursor-pointer hover:text-blue-800" [routerLink]="['/chat']">Direct messages</a>
+  </li>
+</ul>

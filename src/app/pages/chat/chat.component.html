@@ -109,14 +109,14 @@
 </div>
  -->
 
-<div class="h-full text-gray-900">
+<div class="h-full text-gray-900" *ngIf="dataSource">
   <div class="h-full">
     <div class="h-full flex flex-col">
       <!-- header of chat -->
       <div class="p-4">
         <div class="font-medium leading-none capitalize">chats</div>
         <input
-          class="w-full p-2 mt-2text-lg text-gray-800 rounded-md border resize-none focus:outline-none focus:shadow"
+          class="w-full p-2 mt-2 text-lg text-gray-800 rounded-md border resize-none focus:outline-none focus:shadow"
           name="filter"
           placeholder="Search by chat name or nickname"
           type="search"
