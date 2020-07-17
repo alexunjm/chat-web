@@ -11,7 +11,7 @@ services:
       - mongo
     environment:
       NODE_ENV: development
-      MONGODB_URI: mongo
+      MONGODB_URI: mongo/chat
     ports:
       - 3000:3000
     command: >
@@ -31,4 +31,4 @@ services:
     expose:
       - 27017
     volumes:
-      - ./tmp-mongo:/data/db
+      - /tmp/chat-mongo:/data/db

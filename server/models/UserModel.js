@@ -5,13 +5,13 @@ var jwt = require('jsonwebtoken');
 var secret = require('../config').secret;
 
 var Schema = new mongoose.Schema({
-  username: {type: String, lowercase: true, unique: true, required: [true, "es obligatorio"], match: [/^[a-zA-Z0-9]+$/, 'es inválido'], index: true},
-  email: {type: String, lowercase: true, unique: true, required: [true, "es obligatorio"], match: [/\S+@\S+\.\S+/, 'es inválido'], index: true},
+  nickname: {type: String, unique: true, required: [true, "can't be blank"], match: [/^[a-zA-Z0-9]+$/, 'is invalid'], index: true},
+  fullName: {type: String, lowercase: true, required: [true, "can't be blank"]},
   hash: String,
   salt: String
 }, {timestamps: true});
 
-Schema.plugin(uniqueValidator, {message: 'ya ha sido tomado.'});
+Schema.plugin(uniqueValidator, {message: 'is already taken.'});
 
 Schema.methods.validPassword = function(password) {
   var hash = crypto.pbkdf2Sync(password, this.salt, 10000, 512, 'sha512').toString('hex');
@@ -30,22 +30,25 @@ Schema.methods.generateJWT = function() {
 
   return jwt.sign({
     id: this._id,
-    username: this.username,
+    nickname: this.nickname,
     exp: parseInt(exp.getTime() / 1000),
   }, secret);
 };
 
 Schema.methods.toAuthJSON = function(){
   return {
-    username: this.username,
-    email: this.email,
+    id: this._id,
+    fullName: this.fullName,
+    nickname: this.nickname,
     token: this.generateJWT(),
   };
 };
 
 Schema.methods.toProfileJSONFor = function(user){
   return {
-    username: this.username,
+    id: this._id,
+    fullName: this.fullName,
+    nickname: this.nickname,
     image: this.image || 'https://static.productionready.io/images/smiley-cyrus.jpg',
   };
 };

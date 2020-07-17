@@ -7,7 +7,7 @@ export class ApiService {
   url: string;
 
   constructor(private http: HttpClient, public lStorage: LStorageService) {
-    this.setAPIuri('http://localhost:3000');
+    this.setAPIuri('');
   }
 
   // custom method to initialize reqOpts

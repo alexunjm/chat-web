@@ -47,3 +47,39 @@ export class NmbToArr implements PipeTransform {
     return result;
   }
 }
+
+/**
+ * @author Alexander Jaramillo <contacto@alexanderjaramillo.com>
+ */
+@Pipe({
+  name: 'format_p',
+})
+export class FormatP implements PipeTransform {
+  /**
+   * Takes a value and split it by space.
+   */
+  transform(str: String, ...args) {
+
+    // return str.split('\n').map(t => `"${t}"`).join('\n');
+    return str;
+  }
+}
+
+/**
+ * @author Alexander Jaramillo <contacto@alexanderjaramillo.com>
+ */
+@Pipe({
+  name: 'map_join',
+})
+export class MapJoin implements PipeTransform {
+  /**
+   * Takes a value and split it by space.
+   */
+  transform(arr: Array<any>, {prop, sep}) {
+
+    // let [prop, sep] = args;
+    if (!prop) { prop = 'name'; }
+    if (!sep) { sep = '|'; }
+    return arr.map(e => e[prop]).join(sep);
+  }
+}

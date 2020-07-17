@@ -1,10 +1,10 @@
-var mongoose = require('mongoose');
-var router = require('express').Router();
-var passport = require('passport');
-var User = mongoose.model('User');
-var auth = require('../auth');
+const mongoose = require('mongoose');
+const router = require('express').Router();
+const passport = require('passport');
+const User = mongoose.model('User');
+const auth = require('../auth');
 
-router.get('/user', auth.required, function(req, res, next){
+router.get('/', auth.required, function(req, res, next){
   User.findById(req.payload.id).then(function(user){
     if(!user){ return res.sendStatus(401); }
 
@@ -12,19 +12,51 @@ router.get('/user', auth.required, function(req, res, next){
   }).catch(next);
 });
 
-router.put('/user', auth.required, function(req, res, next){
+router.get('/list', auth.required, function(req, res, next){
+  const query = req.query || {};
+  let limit = 20;
+  let offset = 0;
+
+  if(typeof req.query.limit !== 'undefined'){
+    limit = req.query.limit;
+  }
+
+  if(typeof req.query.offset !== 'undefined'){
+    offset = req.query.offset;
+  }
+
+  query.nickname = {$ne: req.payload.nickname};
+
+  // console.log("query", {payload: req.payload, query});
+
+  Promise.all([
+    User.find(query)
+      .limit(Number(limit))
+      .skip(Number(offset))
+      .sort({createdAt: 'desc'})
+      .exec(),
+    User.count(query).exec()
+  ]).then(function([users, usersCount]){
+
+    return res.json({
+      users: users.map((user) => {
+        return user.toProfileJSONFor(user);
+      }),
+      usersCount
+    });
+  }).catch(next);
+});
+
+router.put('/', auth.required, function(req, res, next){
   User.findById(req.payload.id).then(function(user){
     if(!user){ return res.sendStatus(401); }
 
     // only update fields that were actually passed...
-    if(typeof req.body.user.username !== 'undefined'){
-      user.username = req.body.user.username;
+    if(typeof req.body.user.fullName !== 'undefined'){
+      user.fullName = req.body.user.fullName;
     }
-    if(typeof req.body.user.email !== 'undefined'){
-      user.email = req.body.user.email;
-    }
-    if(typeof req.body.user.bio !== 'undefined'){
-      user.bio = req.body.user.bio;
+    if(typeof req.body.user.nickname !== 'undefined'){
+      user.nickname = req.body.user.nickname;
     }
     if(typeof req.body.user.image !== 'undefined'){
       user.image = req.body.user.image;
@@ -39,9 +71,9 @@ router.put('/user', auth.required, function(req, res, next){
   }).catch(next);
 });
 
-router.post('/users/login', function(req, res, next){
-  if(!req.body.user.email){
-    return res.status(422).json({errors: {email: "can't be blank"}});
+router.post('/login', function(req, res, next){
+  if(!req.body.user.nickname){
+    return res.status(422).json({errors: {nickname: "can't be blank"}});
   }
 
   if(!req.body.user.password){
@@ -60,11 +92,11 @@ router.post('/users/login', function(req, res, next){
   })(req, res, next);
 });
 
-router.post('/users', function(req, res, next){
-  var user = new User();
+router.post('/sign-up', function(req, res, next){
+  const user = new User();
 
-  user.username = req.body.user.username;
-  user.email = req.body.user.email;
+  user.fullName = req.body.user.fullName;
+  user.nickname = req.body.user.nickname;
   user.setPassword(req.body.user.password);
 
   user.save().then(function(){

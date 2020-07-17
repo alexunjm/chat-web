@@ -21,9 +21,9 @@ export class AuthGuard implements CanActivate {
             if (localUser.token && localUser.token.length > 1) {
                 const resp = await this.authService.get('user', {});
                 const user = resp['user'];
-                const itsOk = localUser.email
-                  && localUser.email.length > 0
-                  && user.email === localUser.email;
+                const itsOk = localUser.nickname
+                  && localUser.nickname.length > 0
+                  && user.nickname === localUser.nickname;
                 if (itsOk) {return true; }
             }
 

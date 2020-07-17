@@ -33,8 +33,10 @@ if(isProduction){
 }
 
 require('./models/UserModel');
-require('./config/passport');
+require('./models/ChatModel');
+require('./models/MessageModel');
 
+require('./config/passport');
 app.use(require('./routes'));
 
 /// catch 404 and forward to error handler
@@ -75,3 +77,8 @@ app.use(function(err, req, res, next) {
 var server = app.listen( process.env.PORT || 3000, function(){
   console.log('Listening on port ' + server.address().port);
 });
+
+
+/// sockets
+const { sockets } = require('./config/sockets');
+sockets.initWith(server);
