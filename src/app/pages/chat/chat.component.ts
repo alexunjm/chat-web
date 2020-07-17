@@ -1,5 +1,5 @@
 import { LStorageService } from './../../shared/services/storage/l-storage.service';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { ChatService } from './../../shared/services/chat/chat.service';
@@ -10,7 +10,7 @@ import { ChatDataService } from './../../shared/services/api/chat-data.service';
   templateUrl: './chat.component.html',
   styles: []
 })
-export class ChatComponent implements OnInit, OnDestroy {
+export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
 
   me: any;
 
@@ -21,6 +21,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   isSendingMessage = false;
 
   private paramSubscriber: any;
+
+  @ViewChild('lastDiv') lastDiv;
 
   constructor(
     private route: ActivatedRoute,
@@ -36,35 +38,43 @@ export class ChatComponent implements OnInit, OnDestroy {
       const nickname = params['nickname'];
 
       if (!nickname) {
-        return this.chatPersistenceService.list().then((data) => {
-          this.data = data['chatList'];
-        });
+        const channelId = params['channelId'];
+        if (!channelId) {
+          return this.chatPersistenceService.list().then((data) => {
+            this.data = data['chatList'];
+          });
+        }
       }
-      this.chatPersistenceService.getChat(nickname).then((data) => {
-        const selectedChat = data['chat'];
-        this.chatPersistenceService.messagesFromChat(selectedChat).then(data => {
-          const srcMessages = (data['messageList'] || []).reduce((result, m) => {
-            // is it the first element of messageList?
-            if (!result.firstBlock) {
-              result.firstBlock = {from: m.from, messages: [m]};
-              result.lastBlock = result.firstBlock;
-              result.blocks = [result.firstBlock];
-              return result;
-            }
-            // is current message from same block that first in result?
-            if (result.firstBlock.from === m.from) {
-              result.firstBlock.messages = [m, ...result.firstBlock.messages];
-            } else {
-              // add new block as first
-              result.firstBlock = {from: m.from, messages: [m]};
-              result.blocks = [result.firstBlock, ...result.blocks];
-            }
-            return result;
-          }, {lastBlock: null, firstBlock: null, blocks: []});
+      this.queryChat(nickname);
+    });
+  }
 
-          this.dataChat = {...selectedChat, srcMessages};
-          this.joinMessages(this.chat);
-        });
+  queryChat(nickname) {
+
+    this.chatPersistenceService.getChat(nickname).then((data) => {
+      const selectedChat = data['chat'];
+      this.chatPersistenceService.messagesFromChat(selectedChat).then(data => {
+        const srcMessages = (data['messageList'] || []).reduce((result, m) => {
+          // is it the first element of messageList?
+          if (!result.firstBlock) {
+            result.firstBlock = {from: m.from, messages: [m]};
+            result.lastBlock = result.firstBlock;
+            result.blocks = [result.firstBlock];
+            return result;
+          }
+          // is current message from same block that first in result?
+          if (result.firstBlock.from === m.from) {
+            result.firstBlock.messages = [m, ...result.firstBlock.messages];
+          } else {
+            // add new block as first
+            result.firstBlock = {from: m.from, messages: [m]};
+            result.blocks = [result.firstBlock, ...result.blocks];
+          }
+          return result;
+        }, {lastBlock: null, firstBlock: null, blocks: []});
+
+        this.dataChat = {...selectedChat, srcMessages};
+        this.joinMessages(this.chat);
       });
     });
   }
@@ -75,7 +85,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
       this.chatSocketEvt.joinToChatRooms(this.dataSource, this.me.id);
       this.dataSource.forEach(chat => {
-        this.chatSocketEvt.onChatMessage(chat, this.joinMessages);
+        this.chatSocketEvt.onChatMessage(chat, this.joinMessages.bind(this));
       });
     }
 
@@ -89,7 +99,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       return result;
     }, {});
     this.chatSocketEvt.joinToChatRooms([this.chat], this.me.id);
-    this.chatSocketEvt.onChatMessage(this.chat, this.joinMessages);
+    this.chatSocketEvt.onChatMessage(this.chat, this.joinMessages.bind(this));
   }
 
   joinMessages(chat) {
@@ -118,7 +128,26 @@ export class ChatComponent implements OnInit, OnDestroy {
       return result;
     }, {...chat.srcMessages, v: chat.messages ? chat.messages.v + 1 : 1});
     console.log("ChatComponent -> chat.messages -> chat.messages", {chat});
-    
+    this.scrollBottom();
+
+  }
+
+  ngAfterViewInit(): void {
+    this.scrollBottom();
+  }
+
+  scrollBottom() {
+    setTimeout(() => {
+      try {
+        console.log('--------bottom', this.lastDiv.nativeElement.offsetTop);
+        window.scroll({
+          top: this.lastDiv.nativeElement.offsetTop,
+          behavior: 'smooth'
+        });
+      } catch (error) {
+        this.scrollBottom();
+      }
+    }, 300);
   }
 
   newMessage(message) {

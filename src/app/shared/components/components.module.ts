@@ -1,3 +1,4 @@
+import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ModalComponent } from './modal/modal.component';
@@ -9,7 +10,8 @@ import { SideBarComponent } from './side-bar/side-bar.component';
 @NgModule({
   declarations: [ModalComponent, TopBarComponent, SideBarComponent],
   imports: [
-    CommonModule
+    CommonModule,
+    RouterModule
   ],
   exports: [ModalComponent, TopBarComponent, SideBarComponent],
 })

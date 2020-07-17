@@ -6,7 +6,7 @@
       <div class="p-4">
         <div class="font-medium leading-none capitalize">members</div>
         <input
-          class="w-full p-2 text-lg text-gray-800 rounded-md border resize-none focus:outline-none focus:shadow"
+          class="w-full p-2 mt-2text-lg text-gray-800 rounded-md border resize-none focus:outline-none focus:shadow"
           name="filter"
           placeholder="Search by full name or nickname"
           type="search"
@@ -20,13 +20,13 @@
             <div class="flex-1">
               <!-- block i -->
               <div class="my-2">
-                <ul class="flex justify-center">
+                <ul class="flex justify-center flex-wrap">
                   <li
-                    class="p-6 text-center bg-white m-1 rounded"
+                    class="p-6 text-center bg-white m-1 rounded cursor-pointer shadow"
                     *ngFor="let elm of filteredData"
                     [routerLink]="['/chat/with', elm.nickname]" >
 
-                    <img class="h-10 w-10 rounded-full mx-auto" [src]="elm.image" [alt]="elm.nickname">
+                    <img class="w-16 h-16 rounded-full mx-auto" [src]="elm.image" [alt]="elm.nickname">
                     <div class=" flex-grow">
                       <h2 class="text-lg">{{ elm.fullName }}</h2>
                       <div class="text-sm text-gray-500">@{{ elm.nickname }}</div>

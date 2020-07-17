@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 @Component({
   template: `
-  <div class="container mx-auto bg-white">
+  <div class="container mx-auto bg-white min-h-screen">
     <!-- top bar -->
     <!--
     <app-top-bar class="h-8 w-full">
