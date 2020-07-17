@@ -31,4 +31,4 @@ services:
     expose:
       - 27017
     volumes:
-      - ./tmp-mongo:/data/db
+      - /tmp/chat-mongo:/data/db
