@@ -25,4 +25,7 @@ export class ChatService {
       // }
     });
   }
+  unsubscribe() {
+    ['USER_CONNECTED', 'NEW_MESSAGE'].forEach(evName => this.socket.removeAllListeners(evName));
+  }
 }

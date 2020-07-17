@@ -87,7 +87,7 @@
             class="w-full p-2 text-sm text-gray-800 rounded-md border resize-none focus:outline-none focus:shadow"
             name="chatting-area"
             placeholder="Type your message here"
-            (keyup.enter)="newMessage($event.target.value)"
+            (keyup.enter)="newMessage($event.target)"
             (input)="typing = $event.target.value"
             [value] ="typing"
             [disabled]="isSendingMessage"

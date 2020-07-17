@@ -47,6 +47,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
+    this.clearData();
     this.paramSubscriber = this.route.params.subscribe(params => {
 
       const nickname = params['nickname'];
@@ -74,6 +75,16 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
         this.data = data['chatList'];
       });
     });
+  }
+
+  clearData() {
+
+    this.dataSource = null;
+
+    this.filter = null;
+    this.filteredData = null;
+
+    this.chat = null;
   }
 
   queryGroup(channelId) {
@@ -213,14 +224,18 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
     }, 300);
   }
 
-  newMessage(message) {
+  newMessage(input) {
+
     this.isSendingMessage = true;
     this.chatPersistenceService.newMessage(
       this.chat.id,
-      {from: this.me.id, text: message}
+      {from: this.me.id, text: this.typing}
     ).then(data => {
       this.typing = '';
       this.isSendingMessage = false;
+      setTimeout(() => {
+        input.focus();
+      }, 1);
     }).catch(err => {
       console.log('ChatComponent -> newMessage -> err', err);
       this.typing = '';
@@ -230,6 +245,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnDestroy() {
     this.paramSubscriber.unsubscribe();
+    this.chatSocketEvt.unsubscribe();
   }
 
 }
