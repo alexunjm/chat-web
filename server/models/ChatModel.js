@@ -13,6 +13,7 @@ var Schema = new mongoose.Schema({
 Schema.methods.toJSONFor = function(){
   return {
     id: this._id,
+    isChannel: this.isChannel,
     name: this.name,
     participants: this.participants.map(user => user.toProfileJSONFor(user)),
     createdAt: this.createdAt,

@@ -19,7 +19,8 @@ export class ChatService {
   onChatMessage(chat: any, cbFn: (messages: Array<any>) => void) {
     this.socket.on('NEW_MESSAGE', data => {
       // if (message.chat === chat.id) {
-      chat.newMessages = [...(chat.newMessages || []), data['message']];
+      chat.newMessages = chat.newMessages || [];
+      chat.newMessages.push(data['message']);
       cbFn(chat);
       // }
     });

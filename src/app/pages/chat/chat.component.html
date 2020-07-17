@@ -34,7 +34,7 @@
   <div class="h-full">
     <div class="h-full flex flex-col">
       <!-- header of chat -->
-      <ng-template [ngIf]="chat.groupMessage" [ngIfElse]="directMessageProfile">
+      <ng-template [ngIf]="chat.isChannel" [ngIfElse]="directMessageProfile">
         <ng-container *ngTemplateOutlet="groupProfile"></ng-container>
       </ng-template>
       <!-- content of chat -->
@@ -51,7 +51,7 @@
                   <div class="mr-3 w-16" [ngClass]="{'w-16': block.from === me.id}">
                     <img
                       class="w-10 h-10 md:h-16 md:w-16 object-cover rounded-full"
-                      *ngIf="chat.groupMessage && block.from !== me.id"
+                      *ngIf="chat.isChannel && block.from !== me.id"
                       [src]="chat.user[block.from].image">
                   </div>
                   <!-- message block with user block header -->
@@ -136,7 +136,7 @@
                     *ngFor="let elm of filteredData"
                     [routerLink]="['/chat/channel', elm.id]" >
 
-                    <h2 class="text-lg">{{ elm.name }}</h2>
+                    <h2 class="text-lg">{{ elm.isChannel ? '#': '' }}{{ elm.name }}</h2>
                     <div class="text-sm text-gray-500">with: {{ elm.participants | map_join:{prop:'nickname', sep: ', '} }}</div>
 
                   </li>
