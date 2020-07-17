@@ -2,15 +2,17 @@ import { Component, OnInit } from '@angular/core';
 
 @Component({
   template: `
-  <app-top-bar class="absolute top-0 left-0 w-full">
-  </app-top-bar>
-  <div class="pt-10">
-  <!--
-    <app-side-bar class="w-25">
-    </app-side-bar>
-    -->
-    <div class="container bg-gray-100">
-      <router-outlet></router-outlet>
+  <div class="container mx-auto bg-white">
+    <!-- top bar -->
+    <app-top-bar class="h-8 w-full">
+    </app-top-bar>
+    <!-- main -->
+    <div class="relative h-full sm:block">
+      <app-side-bar class="w-48 h-full absolute t-0 transform -translate-x-full sm:translate-x-0">
+      </app-side-bar>
+      <div class="chat-main h-full flex flex-col sm:flex-grow sm:pl-48 sm:border-box">
+        <router-outlet></router-outlet>
+      </div>
     </div>
   </div>
   `,

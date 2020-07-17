@@ -1,10 +1,21 @@
-<input type="search" name="filter" (input)="filterInput($event.target.value)" id="">
+<input
+  class="bg-white focus:outline-none border border-gray-300 rounded py-2 px-4 block w-full appearance-none leading-normal"
+  name="filter"
+  type="search"
+  (input)="filterInput($event.target.value)"
+  />
 
-<ul>
-  <li *ngFor="let elm of filteredData" [routerLink]="['/chat/with', elm.nickname]">
-    <div class="img">
-      <img [src]="elm.image" [alt]="elm.nickname">
+<ul class="flex justify-center">
+  <li
+    class="p-6 text-center bg-white m-1 rounded"
+    *ngFor="let elm of filteredData"
+    [routerLink]="['/chat/with', elm.nickname]" >
+
+    <img class="h-10 w-10 rounded-full mx-auto" [src]="elm.image" [alt]="elm.nickname">
+    <div class=" flex-grow">
+      <h2 class="text-lg">{{ elm.fullName }}</h2>
+      <div class="text-sm text-gray-500">@{{ elm.nickname }}</div>
     </div>
-    <p>{{ elm.fullName }}</p>
+
   </li>
 </ul>

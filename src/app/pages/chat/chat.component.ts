@@ -43,7 +43,26 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.chatPersistenceService.getChat(nickname).then((data) => {
         const selectedChat = data['chat'];
         this.chatPersistenceService.messagesFromChat(selectedChat).then(data => {
-          this.dataChat = {...selectedChat, srcMessages: data['messageList']};
+          const srcMessages = (data['messageList'] || []).reduce((result, m) => {
+            // is it the first element of messageList?
+            if (!result.firstBlock) {
+              result.firstBlock = {from: m.from, messages: [m]};
+              result.lastBlock = result.firstBlock;
+              result.blocks = [result.firstBlock];
+              return result;
+            }
+            // is current message from same block that first in result?
+            if (result.firstBlock.from === m.from) {
+              result.firstBlock.messages = [m, ...result.firstBlock.messages];
+            } else {
+              // add new block as first
+              result.firstBlock = {from: m.from, messages: [m]};
+              result.blocks = [result.firstBlock, ...result.blocks];
+            }
+            return result;
+          }, {lastBlock: null, firstBlock: null, blocks: []});
+
+          this.dataChat = {...selectedChat, srcMessages};
           this.joinMessages(this.chat);
         });
       });
@@ -51,7 +70,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   set data(arr: Array<any>) {
-    console.log("ChatComponent -> setdata -> arr", arr)
     this.dataSource = arr;
     if (arr && arr.length > 0) {
 
@@ -65,12 +83,35 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   set dataChat(chat: any) {
     this.chat = chat;
+    this.chat.user = this.chat.participants.reduce((result, p) => {
+      result[p.id] = p;
+      return result;
+    }, {});
     this.chatSocketEvt.joinToChatRooms([this.chat], this.me.id);
     this.chatSocketEvt.onChatMessage(this.chat, this.joinMessages);
   }
 
   joinMessages(chat) {
-    chat.messages = [...(chat.srcMessages || []).reverse(), ...(chat.newMessages || [])];
+    console.log("---------Before\nChatComponent -> chat.messages -> chat.messages", {chat});
+    chat.messages = (chat.newMessages || []).reduce ((result, m) => {
+      // is result empty?
+      if (!result.lastBlock) {
+        result.firstBlock = {from: m.from, messages: [m]};
+        result.lastBlock = result.firstBlock;
+        result.blocks = [result.firstBlock];
+        return result;
+      }
+      // is current message from same block that last in result?
+      if (result.lastBlock.from === m.from) {
+        result.lastBlock.messages = [...result.firstBlock.messages, m];
+      } else {
+        // add new block as last
+        result.lastBlock = {from: m.from, messages: [m]};
+        result.blocks = [...result.blocks, result.lastBlock];
+      }
+      return result;
+    }, chat.srcMessages);
+    console.log("ChatComponent -> chat.messages -> chat.messages", {chat});
   }
 
   newMessage(message) {

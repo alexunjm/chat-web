@@ -64,3 +64,22 @@ export class FormatP implements PipeTransform {
     return str;
   }
 }
+
+/**
+ * @author Alexander Jaramillo <contacto@alexanderjaramillo.com>
+ */
+@Pipe({
+  name: 'map_join',
+})
+export class MapJoin implements PipeTransform {
+  /**
+   * Takes a value and split it by space.
+   */
+  transform(arr: Array<any>, {prop, sep}) {
+
+    // let [prop, sep] = args;
+    if (!prop) { prop = 'name'; }
+    if (!sep) { sep = '|'; }
+    return arr.map(e => e[prop]).join(sep);
+  }
+}
