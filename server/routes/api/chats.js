@@ -37,7 +37,7 @@ router.param('nickname', function(req, res, next, nickname) {
 
 router.get('/list', auth.required, function(req, res, next) {
 
-  var query = {};
+  var query = {isChannel: {$ne: true}, participants: {"$in" : [req.payload.id]}};
   var limit = 20;
   var offset = 0;
 
@@ -49,8 +49,38 @@ router.get('/list', auth.required, function(req, res, next) {
     offset = req.query.offset;
   }
 
-  if( typeof req.query.tag !== 'undefined' ){
-    query.participants = {"$in" : [req.payload.id]};
+  return Promise.all([
+    Chat.find(query)
+      .limit(Number(limit))
+      .skip(Number(offset))
+      .sort({updatedAt: 'desc'})
+      .populate('participants')
+      .exec(),
+    Chat.count(query).exec(),
+  ]).then(function([chatList, chatCount]){
+
+    const result = {
+      chatList: chatList.map(chat => chat.toJSONFor()),
+      chatCount
+    }
+    return res.json(result);
+  }).catch(next);
+
+});
+
+router.get('/channels', auth.required, function(req, res, next) {
+
+  var query = {isChannel: true, participants: {"$in" : [req.payload.id]}};
+  console.log("query", query)
+  var limit = 20;
+  var offset = 0;
+
+  if(typeof req.query.limit !== 'undefined'){
+    limit = req.query.limit;
+  }
+
+  if(typeof req.query.offset !== 'undefined'){
+    offset = req.query.offset;
   }
 
   return Promise.all([
@@ -87,6 +117,11 @@ router.post('/create', auth.required, function(req, res, next) {
       name = req.body.name;
     }
 
+    let isChannel = false;
+    if (typeof req.body.isChannel !== 'undefined') {
+      isChannel = req.body.isChannel;
+    }
+
     let nicknames = [];
     if (typeof req.body.nicknames !== 'undefined') {
       nicknames = req.body.nicknames;
@@ -96,7 +131,7 @@ router.post('/create', auth.required, function(req, res, next) {
     .then(function (users) {
       const participants = [user, ...users];
 
-      var chat = new Chat({name, participants});
+      var chat = new Chat({name, participants, isChannel: (isChannel || (participants.length != 2))});
 
       return chat.save().then(function(){
         return res.json({chat: chat.toJSONFor()});

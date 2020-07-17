@@ -12,11 +12,24 @@ import { ChatDataService } from './../../shared/services/api/chat-data.service';
 })
 export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
 
+  /***
+   * generic data
+   */
   me: any;
 
+  /***
+   * Data
+   */
   dataSource: Array<any>;
+
+  filter: string;
+  filteredData: Array<any>;
+
   chat: any;
 
+  /***
+   * behavior
+   */
   typing = '';
   isSendingMessage = false;
 
@@ -35,47 +48,64 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit() {
     this.paramSubscriber = this.route.params.subscribe(params => {
-      const nickname = params['nickname'];
 
-      if (!nickname) {
-        const channelId = params['channelId'];
-        if (!channelId) {
-          return this.chatPersistenceService.list().then((data) => {
-            this.data = data['chatList'];
-          });
+      const nickname = params['nickname'];
+      if (nickname) {
+        return this.queryChat(nickname);
+      }
+
+      const channelId = params['channelId'];
+      if (channelId) {
+        switch (channelId) {
+          case 'all':
+            // query all
+            return this.chatPersistenceService.listChannels().then((data) => {
+              this.data = data['chatList'];
+            });
+
+          default:
+            return this.queryGroup(channelId);
         }
       }
-      this.queryChat(nickname);
+
+      return this.chatPersistenceService.list().then((data) => {
+        this.data = data['chatList'];
+      });
     });
   }
 
+  queryGroup(channelId) {
+    this.chatPersistenceService.getChannel(channelId).then(this.loadChat.bind(this));
+  }
+
   queryChat(nickname) {
+    this.chatPersistenceService.getChat(nickname).then(this.loadChat.bind(this));
+  }
 
-    this.chatPersistenceService.getChat(nickname).then((data) => {
-      const selectedChat = data['chat'];
-      this.chatPersistenceService.messagesFromChat(selectedChat).then(data => {
-        const srcMessages = (data['messageList'] || []).reduce((result, m) => {
-          // is it the first element of messageList?
-          if (!result.firstBlock) {
-            result.firstBlock = {from: m.from, messages: [m]};
-            result.lastBlock = result.firstBlock;
-            result.blocks = [result.firstBlock];
-            return result;
-          }
-          // is current message from same block that first in result?
-          if (result.firstBlock.from === m.from) {
-            result.firstBlock.messages = [m, ...result.firstBlock.messages];
-          } else {
-            // add new block as first
-            result.firstBlock = {from: m.from, messages: [m]};
-            result.blocks = [result.firstBlock, ...result.blocks];
-          }
+  loadChat(data) {
+    const selectedChat = data['chat'];
+    this.chatPersistenceService.messagesFromChat(selectedChat).then(data => {
+      const srcMessages = (data['messageList'] || []).reduce((result, m) => {
+        // is it the first element of messageList?
+        if (!result.firstBlock) {
+          result.firstBlock = {from: m.from, messages: [m]};
+          result.lastBlock = result.firstBlock;
+          result.blocks = [result.firstBlock];
           return result;
-        }, {lastBlock: null, firstBlock: null, blocks: []});
+        }
+        // is current message from same block that first in result?
+        if (result.firstBlock.from === m.from) {
+          result.firstBlock.messages = [m, ...result.firstBlock.messages];
+        } else {
+          // add new block as first
+          result.firstBlock = {from: m.from, messages: [m]};
+          result.blocks = [result.firstBlock, ...result.blocks];
+        }
+        return result;
+      }, {lastBlock: null, firstBlock: null, blocks: []});
 
-        this.dataChat = {...selectedChat, srcMessages};
-        this.joinMessages(this.chat);
-      });
+      this.dataChat = {...selectedChat, srcMessages};
+      this.joinMessages(this.chat);
     });
   }
 
@@ -88,7 +118,36 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
         this.chatSocketEvt.onChatMessage(chat, this.joinMessages.bind(this));
       });
     }
+    this.filterInput(this.filter);
 
+  }
+
+  filterInput(str: string) {
+    console.log("filterInput -> str", str)
+    this.query(str ? {name: str} : null);
+  }
+
+  query(params?: any) {
+    if (!params) {
+      return this.filteredData = this.dataSource;
+    }
+
+    this.filteredData = this.dataSource.filter((item) => {
+      for (const key in params) {
+        if (params.hasOwnProperty(key)) {
+          const field = item[key];
+
+          if (typeof field === 'string' && field.toLowerCase().indexOf(params[key].toLowerCase()) >= 0) {
+            return item;
+          // } else if (Array.isArray(field) && field.length > 0) {
+          //   return item;
+          } else if (field === params[key]) {
+            return item;
+          }
+        }
+      }
+      return null;
+    });
   }
 
   set dataChat(chat: any) {

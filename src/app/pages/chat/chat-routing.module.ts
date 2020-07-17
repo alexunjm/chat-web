@@ -10,7 +10,7 @@ const routes: Routes = [{
   path: 'with/:nickname',
   component: ChatComponent
 }, {
-  path: 'channels/:channelId',
+  path: 'channel/:channelId',
   component: ChatComponent
 }];
 

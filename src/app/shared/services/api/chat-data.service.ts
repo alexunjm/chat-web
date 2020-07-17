@@ -24,6 +24,27 @@ export class ChatDataService extends ApiService {
     });
   }
 
+  listChannels() {
+
+    return this.get('chat/channels', {}).then(response => {
+      console.log('ChatDataService -> list -> response', response);
+      return Promise.resolve(response);
+    }).catch(err => {
+      console.log('ChatDataService -> list -> err', {err});
+      return Promise.reject([]);
+    });
+  }
+
+  getChannel(channelId) {
+
+    return this.get(`chat/get/${channelId}`, {}).then(response => {
+      return Promise.resolve(response);
+    }).catch(err => {
+      console.log('ChatDataService -> getChat -> err', {err});
+      return Promise.reject([]);
+    });
+  }
+
   getChat(nickname) {
 
     return this.get(`chat/with/${nickname}`, {}).then(response => {

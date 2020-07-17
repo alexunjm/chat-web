@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 
 
 var Schema = new mongoose.Schema({
+  isChannel: { type: Boolean, default: false },
   name: { type: String, required: [true, "can't be blank"] },
   participants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   messages: [{
