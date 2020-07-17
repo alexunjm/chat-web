@@ -1,21 +1,50 @@
-<input
-  class="bg-white focus:outline-none border border-gray-300 rounded py-2 px-4 block w-full appearance-none leading-normal"
-  name="filter"
-  type="search"
-  (input)="filterInput($event.target.value)"
-  />
 
-<ul class="flex justify-center">
-  <li
-    class="p-6 text-center bg-white m-1 rounded"
-    *ngFor="let elm of filteredData"
-    [routerLink]="['/chat/with', elm.nickname]" >
+<div class="h-full text-gray-900">
+  <div class="h-full">
+    <div class="h-full flex flex-col">
+      <!-- header of chat -->
+      <div class="p-4">
+        <div class="font-medium leading-none capitalize">members</div>
+        <input
+          class="w-full p-2 text-lg text-gray-800 rounded-md border resize-none focus:outline-none focus:shadow"
+          name="filter"
+          placeholder="Search by full name or nickname"
+          type="search"
+          (input)="filterInput($event.target.value)"
+          />
+      </div>
+      <!-- content of chat -->
+      <div class="flex-1 flex flex-col">
+        <div class="px-4 flex-1">
+          <div class="flex flex-col">
+            <div class="flex-1">
+              <!-- block i -->
+              <div class="my-2">
+                <ul class="flex justify-center">
+                  <li
+                    class="p-6 text-center bg-white m-1 rounded"
+                    *ngFor="let elm of filteredData"
+                    [routerLink]="['/chat/with', elm.nickname]" >
 
-    <img class="h-10 w-10 rounded-full mx-auto" [src]="elm.image" [alt]="elm.nickname">
-    <div class=" flex-grow">
-      <h2 class="text-lg">{{ elm.fullName }}</h2>
-      <div class="text-sm text-gray-500">@{{ elm.nickname }}</div>
+                    <img class="h-10 w-10 rounded-full mx-auto" [src]="elm.image" [alt]="elm.nickname">
+                    <div class=" flex-grow">
+                      <h2 class="text-lg">{{ elm.fullName }}</h2>
+                      <div class="text-sm text-gray-500">@{{ elm.nickname }}</div>
+                    </div>
+
+                  </li>
+                </ul>
+              </div>
+              <!-- end block i -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- end content of chat -->
     </div>
+  </div>
+</div>
 
-  </li>
-</ul>
+
+
+

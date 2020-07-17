@@ -95,6 +95,11 @@ export class ChatComponent implements OnInit, OnDestroy {
   joinMessages(chat) {
     console.log("---------Before\nChatComponent -> chat.messages -> chat.messages", {chat});
     chat.messages = (chat.newMessages || []).reduce ((result, m) => {
+      if (!m.isNew) {
+        m.isNew = true;
+      } else {
+        return result;
+      }
       // is result empty?
       if (!result.lastBlock) {
         result.firstBlock = {from: m.from, messages: [m]};
@@ -104,15 +109,16 @@ export class ChatComponent implements OnInit, OnDestroy {
       }
       // is current message from same block that last in result?
       if (result.lastBlock.from === m.from) {
-        result.lastBlock.messages = [...result.firstBlock.messages, m];
+        result.lastBlock.messages = [...result.lastBlock.messages, m];
       } else {
         // add new block as last
         result.lastBlock = {from: m.from, messages: [m]};
         result.blocks = [...result.blocks, result.lastBlock];
       }
       return result;
-    }, chat.srcMessages);
+    }, {...chat.srcMessages, v: chat.messages ? chat.messages.v + 1 : 1});
     console.log("ChatComponent -> chat.messages -> chat.messages", {chat});
+    
   }
 
   newMessage(message) {

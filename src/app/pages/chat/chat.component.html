@@ -4,9 +4,10 @@
 </ng-template>
 <ng-container *ngTemplateOutlet="clock"></ng-container>
  -->
+
 <!-- header profile -->
 <ng-template #directMessageProfile>
-  <div class="p-4 flex items-center">
+  <div class="p-4 flex items-center shadow sticky top-0 bg-white">
     <img class="w-10 h-10 md:h-16 md:w-16 rounded-full mr-2" [src]="chat.participants[1].image">
     <div>
       <h2 class="font-medium leading-none capitalize">{{chat.participants[1].fullName}}</h2>
@@ -15,7 +16,7 @@
   </div>
 </ng-template>
 <ng-template #groupProfile>
-  <div class="p-4 flex justify-between items-end shadow">
+  <div class="p-4 flex justify-between items-end shadow sticky top-0 bg-white">
     <div>
       <div class="font-medium">#{{ chat.name }}</div>
       <div class="flex">
@@ -27,6 +28,7 @@
     <!-- <div class="text-sm text-gray-700 font-normal">Details</div> -->
   </div>
 </ng-template>
+<!-- end header profile -->
 
 <div class="h-full text-gray-900" *ngIf="chat">
   <div class="h-full">
@@ -40,8 +42,10 @@
         <div class="px-4 flex-1">
           <div class="flex flex-col">
             <div class="flex-1">
-              <!-- block 1 -->
-              <div class="my-2" *ngFor="let block of chat.messages.blocks">
+              <!-- block i -->
+              <div
+                class="my-2"
+                *ngFor="let block of chat.messages.blocks">
                 <div class="flex">
                   <!-- profile image -->
                   <div class="mr-3 w-16" [ngClass]="{'w-16': block.from === me.id}">
@@ -67,10 +71,14 @@
 
                         <chat-message [notMine]="block.from !== me.id" [text]="message.text"></chat-message>
                       </div>
+                      <!-- end msg i -->
                     </div>
+                    <!-- end block message -->
                   </div>
+                  <!-- end message block with user block header -->
                 </div>
               </div>
+              <!-- end block i -->
             </div>
           </div>
         </div>
@@ -86,42 +94,10 @@
           ></textarea>
         </div>
       </div>
+      <!-- end content of chat -->
     </div>
   </div>
 </div>
-<!--
-<div class="chat" *ngIf="chat">
-  <div class="chat-header bg-gray-100 p-6">
-    <img class="h-16 w-16 rounded-full mx-auto" [src]="chat.participants[1].image">
-    <div>
-      <h2 class="text-lg">{{chat.participants[1].fullName}}</h2>
-      <div class="text-purple-50">@{{chat.participants[1].nickname}}</div>
-    </div>
-  </div>
-  <div class="chat-body bg-transparent">
-    <ul class="messages flex flex-col" >
-      <li
-        *ngFor="let message of (chat.messages || [])"
-        class="message self-end"
-        [ngClass]="{'self-end': message.from == me.id}"
-        >
-        <span class="whitespace-pre-wrap">{{message.text | format_p}}</span>
-      </li>
-    </ul>
-  </div>
-  <div class="chat-input bg-gray-100 absolute bottom-0 w-full">
-    <textarea
-      class="bg-white focus:outline-none border border-gray-300 py-2 px-4 block w-full appearance-none leading-normal"
-      type="text"
-      placeholder="Type your message here"
-      (keyup.enter)="newMessage($event.target.value)"
-      (input)="typing = $event.target.value"
-      [value] ="typing"
-      [disabled]="isSendingMessage"
-      ></textarea>
-  </div>
-</div>
- -->
 
 <!--
 <div class="chat-list">
